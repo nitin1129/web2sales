@@ -1,0 +1,27 @@
+node_modules/
+dist/
+apps/pocketbase/pb_data/
+apps/pocketbase/pb_snapshots/
+.env
+apps/api/.env
+apps/web/.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+
+# Admin-managed data — these are generated at runtime by the API and should
+# not be checked into source control. Each install starts from an empty store.
+apps/api/data/images/
+apps/api/data/blogs.json
+apps/api/data/videos.json
+apps/api/data/webinars.json
+
+# Build artefacts that Vite regenerates
+apps/web/vite.config.js.timestamp-*
+apps/web/public/sitemap.xml
+
+# Editor / IDE / AI tool session config
+.claude/
+.vscode/
+.idea/

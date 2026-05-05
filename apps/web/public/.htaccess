@@ -1,0 +1,51 @@
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteBase /
+
+	# --- Dynamic SEO endpoints (proxied to the API) -------------------------
+	# The API (apps/api) serves /sitemap.xml and /robots.txt from live data.
+	# Uncomment ONE of the blocks below based on your production setup.
+	#
+	# Requires mod_proxy + mod_proxy_http to be enabled on the Apache host.
+	# After enabling, `curl https://web2sales.in/sitemap.xml` should return the
+	# API's fresh XML (with every published blog post) — no redeploy needed.
+	#
+	# Option 1: API on same host, different port (e.g. Node on localhost:3001)
+	# <IfModule mod_proxy.c>
+	# 	RewriteRule ^sitemap\.xml$ http://127.0.0.1:3001/sitemap.xml [P,L]
+	# 	RewriteRule ^robots\.txt$ http://127.0.0.1:3001/robots.txt [P,L]
+	# </IfModule>
+	#
+	# Option 2: API on a separate subdomain (e.g. api.web2sales.in)
+	# <IfModule mod_proxy.c>
+	# 	RewriteRule ^sitemap\.xml$ https://api.web2sales.in/sitemap.xml [P,L]
+	# 	RewriteRule ^robots\.txt$ https://api.web2sales.in/robots.txt [P,L]
+	# </IfModule>
+	#
+	# If mod_proxy is not available, leave both blocks commented. The static
+	# files in public/ (regenerated on every `npm run build`) will be served,
+	# which is stale between deploys but still valid.
+	# ------------------------------------------------------------------------
+
+	# SPA fallback — send everything that isn't a real file/dir to index.html
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule ^ index.html [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+	Header set X-Powered-By "Web2Sales"
+
+	# Cache everything on CDN by default
+	Header set Cache-Control "public, s-maxage=604800, max-age=0"
+
+	# Cache hashed assets aggressively in the browser
+	<If "%{REQUEST_URI} =~ m#^/assets/.*$#">
+		Header set Cache-Control "public, max-age=604800"
+	</If>
+
+	# Don't let crawlers / CDNs over-cache the SEO files
+	<If "%{REQUEST_URI} =~ m#^/(sitemap\.xml|robots\.txt)$#">
+		Header set Cache-Control "public, max-age=300"
+	</If>
+</IfModule>
