@@ -1,6 +1,6 @@
-const DEFAULT_API_URL = 'http://localhost:3001';
+import { API_URL } from './config.js';
 
-export const API_URL = (import.meta.env.VITE_API_URL || DEFAULT_API_URL).replace(/\/$/, '');
+export { API_URL };
 
 const TOKEN_KEY = 'w2s_admin_token';
 
